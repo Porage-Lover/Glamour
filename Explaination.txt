@@ -1,0 +1,52 @@
+=========================================================
+COSMETIC SHOP RETAIL SYSTEM - FULL PROJECT EXPLANATION
+=========================================================
+
+This document outlines every nuance of the Cosmetic Shop Retail System we've built, explaining the architectural decisions, database relationships, and code flows.
+
+1. TECHNOLOGY STACK
+-------------------
+• Frontend: Next.js 16 (App Router), React 18
+• Styling: Vanilla CSS (Custom Design System, utilizing CSS Grid and Flexbox, decoupled from frameworks to maintain a bespoke 'Biagiotti' cosmetic aesthetic)
+• Backend: Next.js API Routes (Node.js)
+• Database: MySQL 9.6
+• Security/Auth: JSON Web Tokens (jose library), Bcrypt (bcryptjs) for password hashing
+• Utilities: Nodemailer (Ethereal test accounts) for automated transactional emails
+
+2. DATABASE ARCHITECTURE (MySQL)
+--------------------------------
+Our database operates strictly relationally to ensure zero data redundancy and absolute data integrity.
+• `customers`: Stores all public user accounts. Passwords are encrypted via bcrypt.
+• `profiles`: Secure, isolated table specifically for 'admin' and 'staff' roles to ensure that a hijacked customer portal cannot organically upgrade itself to an admin state.
+• `products`: Holds the cosmetic catalog. Crucially, the `image_url` natively integrates our localized static assets and is strictly bound to visual matching constraints (e.g., prod-1 mapped to Lakme, rather than alphabetical arbitrary placement).
+• `orders`: The central transactional table. Contains business metadata like total price, status, and securely anchors to the `customers` table via `customer_id`. Guest checkouts are recorded securely as well (customer_name vs explicit customer_id).
+• `order_items`: A junction table representing a normalized mapping of every single product bought inside a single `order_id`. Maintains price-at-time-of-purchase to prevent accounting errors if a product's global price changes later.
+
+3. AUTHENTICATION & SECURITY FLOWS
+----------------------------------
+We completely bypassed conventional session cookies in favor of Stateless JWTs (JSON Web Tokens). 
+• When a user logs in, the Node backend validates their Bcrypt hash and generates a signed JWT payload containing their ID. 
+• This JWT is structurally handed off back to the React client and housed safely in `localStorage` alongside basic non-sensitive UI information (like user name).
+• Whenever the user requests secure data (like `/my-account` or `/admin`), their browser dynamically intercepts the request and injects `Authorization: Bearer <token>` into the HTTP header. Custom middleware routes (`jose.jwtVerify`) intercepts this on the Node layer before allowing database interactions.
+
+4. CHECKOUT & CART CONTEXT
+--------------------------
+• The shopping cart persists natively across page refreshes by hooking into a globally wrapped React Context (`CartProvider.js`).
+• It executes synchronization logic leveraging the browser's `localStorage` directly—intercepting 'add to cart' pushes, parsing existing JSON payloads, stacking quantities automatically if the ID matches, and triggering React Context refreshes globally.
+• The Checkout process executes a robust multi-table SQL transaction logic. The system parses the cart, builds the `orders` entry, sequentially inserts every item into `order_items`, adjusts global product `stock_quantity`, and ultimately dispenses an automated HTML email receipt mapped to the buyer via Nodemailer.
+
+5. FORGOT PASSWORD NOTIFICATION LOOP
+------------------------------------
+• Instead of storing raw PINs in the database, requesting a password reset seamlessly creates a cryptographically signed JWT encoded with a strict 15-minute expiration block alongside the specific account's email address.
+• This token is appended directly to an HTTPS recovery URL and fired over Nodemailer.
+• When the user clicks the URL, the Next.js frontend grabs the token from the query params, fires it back to the Node `/api/auth/customer/reset-password` endpoint. Node executes the cryptographic decryption, confirms the token is not tampered, guarantees the timestamp hasn't expired, and immediately updates the parsed Email's hash in the DB.  
+
+6. ORDER TRACKING & MY ACCOUNT
+------------------------------
+• Track Orders API (`/api/orders/track`): Implemented a clean, unauthenticated yet highly secure route that requires the explicit intersection of a valid `Order ID` WITH the exact `Billing Email` originally associated with the purchase. This provides robust guest-level utility without leaking database metadata.
+• My Account (`/my-account`): For registered users, we created a full WooCommerce-style dashboard UI hooked strictly to their JWT. The frontend performs dual REST-GET pulls against their profile data and historical order tables for full transparency. 
+
+7. ADMIN PERMISSIONS & OVERRIDES
+--------------------------------
+• The `/admin` portal leverages a dual CSS constraint paradigm. Elements flex to occupy 100% computational width inside `globals.css` securely mapped over `block` parameters instead of generic `grid`, fixing legacy squish issues.
+• Creating a user here structurally asks the Administrator to define a "Role". Instead of merging columns into a master "Users" database, the Node endpoint parses the payload and explicitly intercepts it—funneling standard customers into the safe outer `customers` table, and cleanly isolating Staff into the internal `profiles` table. This prevents cross-contamination of system privileges.
