@@ -59,16 +59,22 @@ export async function POST(req) {
     const [custRows] = await query('SELECT email FROM customers WHERE id = ?', [customer_id]);
     const email = custRows?.email;
 
-    // Send Receipt Email asynchronously (so we don't block the UI heavily)
+    // Send Receipt Email
+    let receiptUrl = null;
     if (email) {
-      sendOrderReceiptEmail(email, {
-        orderNumber,
-        totalAmount,
-        items
-      }).catch(console.error);
+      try {
+        const emailResult = await sendOrderReceiptEmail(email, {
+          orderNumber,
+          totalAmount,
+          items
+        });
+        receiptUrl = emailResult.testUrl;
+      } catch (e) {
+        console.error('Email error:', e);
+      }
     }
 
-    return NextResponse.json({ orderId, orderNumber, totalAmount, message: 'Order placed successfully' }, { status: 201 });
+    return NextResponse.json({ orderId, orderNumber, totalAmount, receiptUrl, message: 'Order placed successfully' }, { status: 201 });
   } catch (err) {
     // Handle SQL trigger errors (e.g. stock exceeded)
     if (err.message && err.message.includes('exceeds available stock')) {

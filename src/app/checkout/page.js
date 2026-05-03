@@ -93,6 +93,13 @@ export default function CheckoutPage() {
             <h2 style={{ marginBottom: '1rem' }}>Thank you for your order!</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Order Number: <strong>{success.orderNumber}</strong></p>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Total: <strong>₹{parseFloat(success.totalAmount).toLocaleString('en-IN')}</strong></p>
+            {success.receiptUrl && (
+              <p style={{ marginTop: '-1rem', marginBottom: '2rem' }}>
+                <a href={success.receiptUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'underline', fontWeight: '500' }}>
+                  Open Ethereal Email Receipt ↗
+                </a>
+              </p>
+            )}
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button className="btn btn-primary" onClick={() => router.push('/shop')}>Continue Shopping</button>
               <button className="btn btn-outline" onClick={() => router.push('/admin')}>View Dashboard</button>
