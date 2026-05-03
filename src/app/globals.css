@@ -1406,7 +1406,7 @@ textarea.form-input {
   position: fixed;
   inset: 0;
   background: var(--white);
-  z-index: 999;
+  z-index: 1001;
   display: flex;
   flex-direction: column;
   justify-content: center;
