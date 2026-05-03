@@ -29,7 +29,7 @@ export default function MyAccountDashboard() {
           localStorage.removeItem('customer-user');
           window.dispatchEvent(new Event('customer-auth-changed'));
           router.push('/login');
-          throw new Error(d.error);
+          throw new Error(d.error || 'Unknown Error from backend');
         }
         
         setData(d);

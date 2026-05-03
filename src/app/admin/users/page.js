@@ -9,7 +9,9 @@ export default function AdminUsersList() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/admin/users')
+    fetch('/api/admin/users', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin-token')}` }
+    })
       .then(res => res.json())
       .then(data => {
         if (data.users) setUsers(data.users);

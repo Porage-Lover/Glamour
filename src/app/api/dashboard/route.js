@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { query, queryRaw } from '@server/db';
+import { verifyAdmin } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     // Total revenue
     const [{ total_revenue }] = await query('SELECT COALESCE(SUM(total_amount), 0) as total_revenue FROM orders WHERE status = ?', ['completed']);

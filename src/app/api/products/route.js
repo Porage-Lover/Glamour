@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@server/db';
+import { verifyAdmin } from '@/lib/auth';
 
 export async function GET(req) {
   try {
@@ -33,6 +34,9 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const body = await req.json();
     const { name, brand, category, price, stock_quantity, supplier_id, description, image_url } = body;

@@ -52,9 +52,12 @@ export default function AdminLogin() {
             <label className="form-label">Password</label>
             <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
           </div>
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading} style={{ marginBottom: '1rem' }}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+          <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+            <a href="/" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>← Back to Storefront</a>
+          </div>
         </form>
       </div>
     </div>

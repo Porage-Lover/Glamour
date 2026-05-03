@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { query } from '@server/db';
 import bcrypt from 'bcryptjs';
+import { verifyAdmin } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const adminRows = await query(`SELECT id, username as name, email, phone, role, 'System' as type FROM profiles ORDER BY username`);
     const customerRows = await query(`SELECT id, name, email, phone, 'customer' as role, 'Customer' as type, created_at FROM customers ORDER BY created_at DESC`);
@@ -21,6 +25,9 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const { name, email, phone, address, password, role } = await req.json();
 

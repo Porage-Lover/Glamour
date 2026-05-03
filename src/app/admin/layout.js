@@ -20,9 +20,26 @@ export default function AdminLayoutWrapper({ children }) {
 
     if (!token || !user) {
       router.push('/admin/login');
-    } else {
-      setIsAuthenticated(true);
+      return;
     }
+
+    // Explicit server-side cryptographic validation
+    fetch('/api/admin/verify', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.valid) {
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem('admin-token');
+        localStorage.removeItem('admin-user');
+        router.push('/admin/login');
+      }
+    })
+    .catch(() => {
+      router.push('/admin/login');
+    });
   }, [pathname, router]);
 
   // Optionally flash a spinner while validating their identity before streaming any visual dashboard chunks

@@ -7,7 +7,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/dashboard')
+    fetch('/api/dashboard', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin-token')}` }
+    })
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
@@ -155,6 +157,16 @@ function AdminSidebar({ active }) {
         <li><Link href="/admin/users" className={active === 'users' ? 'active' : ''}>👥 Accounts</Link></li>
         <li><Link href="/shop" className="">🏪 View Store</Link></li>
         <li><Link href="/" className="">🏠 Home</Link></li>
+        <li style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+          <a href="#" onClick={(e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin-token');
+            localStorage.removeItem('admin-user');
+            localStorage.removeItem('customer-token');
+            localStorage.removeItem('customer-user');
+            window.location.href = '/admin/login';
+          }} style={{ color: 'var(--error)' }}>🚪 Sign Out</a>
+        </li>
       </ul>
     </aside>
   );

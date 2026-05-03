@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { query } from '@server/db';
 import { sendOrderReceiptEmail } from '../../../lib/emailer';
+import { verifyAdmin } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const orders = await query(`
       SELECT o.*, c.name as customer_name

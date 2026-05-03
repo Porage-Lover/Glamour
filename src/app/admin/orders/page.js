@@ -7,7 +7,9 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/orders')
+    fetch('/api/orders', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin-token')}` }
+    })
       .then(r => r.json())
       .then(d => { setOrders(d.orders || []); setLoading(false); })
       .catch(() => setLoading(false));

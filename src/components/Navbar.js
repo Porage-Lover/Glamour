@@ -52,6 +52,8 @@ export default function Navbar({ dark = false }) {
                 <a onClick={() => {
                   localStorage.removeItem('customer-token');
                   localStorage.removeItem('customer-user');
+                  localStorage.removeItem('admin-token');
+                  localStorage.removeItem('admin-user');
                   window.dispatchEvent(new Event('customer-auth-changed'));
                 }} style={{ cursor: 'pointer', color: 'var(--error)' }}>
                   Sign Out ({customerAuth.name.split(' ')[0]})
@@ -64,6 +66,9 @@ export default function Navbar({ dark = false }) {
           <div className="navbar-actions">
             <Link href={customerAuth ? "/my-account" : "/login"} className="user-icon" title="My Account">
               👤
+            </Link>
+            <Link href="/order-tracking" className="track-icon" title="Track Order" style={{ marginLeft: '1rem', textDecoration: 'none' }}>
+              📦
             </Link>
             <Link href="/cart" className="cart-icon" id="cart-icon">
               🛒
@@ -89,6 +94,8 @@ export default function Navbar({ dark = false }) {
           <a onClick={() => {
             localStorage.removeItem('customer-token');
             localStorage.removeItem('customer-user');
+            localStorage.removeItem('admin-token');
+            localStorage.removeItem('admin-user');
             window.dispatchEvent(new Event('customer-auth-changed'));
             setMenuOpen(false);
           }} style={{ cursor: 'pointer', color: 'var(--error)' }}>

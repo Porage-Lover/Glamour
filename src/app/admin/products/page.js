@@ -24,7 +24,14 @@ export default function AdminProducts() {
     e.preventDefault();
     const url = editProduct ? `/api/products/${editProduct.id}` : '/api/products';
     const method = editProduct ? 'PUT' : 'POST';
-    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
+    await fetch(url, { 
+      method, 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('admin-token')}`
+      }, 
+      body: JSON.stringify(form) 
+    });
     setShowModal(false);
     setEditProduct(null);
     setForm({ name: '', brand: '', category: 'Skincare', price: '', stock_quantity: '', description: '' });
@@ -39,7 +46,10 @@ export default function AdminProducts() {
 
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
-    await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    await fetch(`/api/products/${id}`, { 
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('admin-token')}` }
+    });
     fetchProducts();
   };
 

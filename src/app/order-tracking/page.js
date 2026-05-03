@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -10,6 +10,14 @@ export default function OrderTracking() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('id')) setOrderId(params.get('id'));
+      if (params.get('email')) setEmail(params.get('email'));
+    }
+  }, []);
 
   const handleTrack = async (e) => {
     e.preventDefault();

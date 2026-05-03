@@ -10,7 +10,7 @@ export async function GET(req) {
     }
 
     const token = authHeader.split(' ')[1];
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-for-dev');
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
     
     let payload;
     try {
@@ -27,7 +27,7 @@ export async function GET(req) {
 
     const orders = await query(`
       SELECT o.id, o.order_number, o.total_amount, o.status, o.created_at,
-             (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) as num_items
+             (SELECT COUNT(*) FROM order_details oi WHERE oi.order_id = o.id) as num_items
       FROM orders o
       WHERE o.customer_id = ?
       ORDER BY o.created_at DESC

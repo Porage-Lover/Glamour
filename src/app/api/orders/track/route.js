@@ -24,7 +24,7 @@ export async function POST(req) {
     const order = orderRows[0];
 
     // Fetch order items
-    const items = await query('SELECT product_name, quantity, unit_price FROM order_items WHERE order_id = ?', [order.id]);
+    const items = await query('SELECT product_name, quantity, unit_price FROM order_details WHERE order_id = ?', [order.id]);
 
     return NextResponse.json({ order, items });
   } catch (err) {

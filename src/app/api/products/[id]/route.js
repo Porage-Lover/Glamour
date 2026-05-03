@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@server/db';
+import { verifyAdmin } from '@/lib/auth';
 
 export async function GET(req, { params }) {
   try {
@@ -13,6 +14,9 @@ export async function GET(req, { params }) {
 }
 
 export async function PUT(req, { params }) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const { id } = await params;
     const body = await req.json();
@@ -28,6 +32,9 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
+  const auth = await verifyAdmin(req);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+
   try {
     const { id } = await params;
     await query('DELETE FROM products WHERE id = ?', [id]);
