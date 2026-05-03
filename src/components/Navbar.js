@@ -39,7 +39,7 @@ export default function Navbar({ dark = false }) {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${dark ? 'dark' : ''}`} id="main-navbar">
+      <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${dark ? 'dark' : ''} ${menuOpen ? 'hidden-nav' : ''}`} id="main-navbar">
         <div className="navbar-inner">
           <Link href="/" className="navbar-logo">Glamour</Link>
           <ul className="navbar-nav">
