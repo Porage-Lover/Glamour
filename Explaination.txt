@@ -50,3 +50,8 @@ We completely bypassed conventional session cookies in favor of Stateless JWTs (
 --------------------------------
 • The `/admin` portal leverages a dual CSS constraint paradigm. Elements flex to occupy 100% computational width inside `globals.css` securely mapped over `block` parameters instead of generic `grid`, fixing legacy squish issues.
 • Creating a user here structurally asks the Administrator to define a "Role". Instead of merging columns into a master "Users" database, the Node endpoint parses the payload and explicitly intercepts it—funneling standard customers into the safe outer `customers` table, and cleanly isolating Staff into the internal `profiles` table. This prevents cross-contamination of system privileges.
+
+8. SYSTEM CREDENTIALS
+---------------------
+• Admin Default Email: admin@glamour.local
+• Admin Default Password: admin123
